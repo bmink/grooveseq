@@ -1,5 +1,5 @@
 P = grooveseq
-OBJS = main.o midi_osx.o midi_msg.o pattern.o midi_note.o
+OBJS = main.o midi_osx.o midi_msg.o pattern.o
 CFLAGS = -g -Wall -Wstrict-prototypes
 LDLIBS = -lb -framework CoreMIDI -framework CoreServices
 
