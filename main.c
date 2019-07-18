@@ -3,6 +3,7 @@
 #include <errno.h>
 #include "bstr.h"
 #include "blog.h"
+#include "pattern.h"
 
 
 int
@@ -14,6 +15,7 @@ main(int argc, char **argv)
 	int	ret;
 	barr_t	*lines;
 	bstr_t	*line;
+	int	linenr;
 
 	err = 0;
 	seq = NULL;
@@ -68,8 +70,37 @@ main(int argc, char **argv)
 		goto end_label;
 	}
 
-	printf("%d lines\n", barr_cnt(lines));
+	ret = pattern_init();
+	if(ret != 0) {
+		fprintf(stderr, "Couldn't initialize parser\n");
+		err = -1;
+		goto end_label;
+	}
 
+
+	linenr = 1;
+	for(line = (bstr_t *) barr_begin(lines);
+	    line < (bstr_t *) barr_end(lines); ++line) {
+		if(bstrempty(line) || bstrbeginswith(line, "#")) {
+			++linenr;
+			continue;	
+		}
+
+		ret = pattern_parse_line(line);
+		if(ret != 0) {
+			fprintf(stderr, "Couldn't parse line %d.\n", linenr);
+			err = -1;
+			goto end_label;
+		}
+		++linenr;
+	}
+
+	ret = pattern_process();
+	if(ret != 0) {
+		fprintf(stderr, "Error while processing pattern\n");
+		err = -1;
+		goto end_label;
+	}
 	
 end_label:
 

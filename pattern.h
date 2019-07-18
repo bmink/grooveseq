@@ -4,25 +4,38 @@
 #include "barr.h"
 #include "bstr.h"
 
+
+#define STEPS_PER_BAR	64
+#define MAX_BAR		512
+
 typedef struct step {
 	int	st_on;
-	int	st_level;
+	int	st_vel;
 } step_t;
 
-typedef struct sequence {
-	int	se_midinote;
-	barr_t	*se_steps;
-} seqeuence_t;
 
+typedef struct bar {
+	step_t	se_steps[STEPS_PER_BAR];
+	int	se_probability; /* etc... */
+} bar_t;
+
+
+typedef struct part {
+	bar_t	pa_bars[MAX_BAR];
+} part_t;
+
+#define MIDITICK_PER_QUARTER_NOTE	24
 
 typedef struct miditick {
 	bstr_t	*mt_data;
 } miditick_t;
 
 
-extern barr_t	*ticks;
-extern barr_t	*curtick;
-extern int	curbar;
-extern int	curbeat;
+int pattern_init(void);
+int pattern_parse_line(bstr_t *);
+int pattern_process(void);
+int pattern_uninit(void);
+
+
 
 #endif
